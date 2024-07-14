@@ -43,6 +43,7 @@
 
 /* USER CODE BEGIN PV */
 uint8_t delayTimer = 200;
+uint8_t tempVariable = 10;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
