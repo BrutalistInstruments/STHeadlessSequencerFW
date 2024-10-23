@@ -3,3 +3,6 @@
 .settings/
 *.ld
 Appli/Debug
+STM32CubeIDE/Appli/Debug
+STM32CubeIDE/Boot/Debug
+STM32CubeIDE/ExtMemLoader/Debug
