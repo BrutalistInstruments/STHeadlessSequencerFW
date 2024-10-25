@@ -45,11 +45,11 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.275355906" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../../Appli/Inc"/>
-									<listOptionValue builtIn="false" value="../../../../../../../Drivers/BSP/STM32H7S78-DK"/>
-									<listOptionValue builtIn="false" value="../../../../../../../Drivers/STM32H7RSxx_HAL_Driver/Inc"/>
-									<listOptionValue builtIn="false" value="../../../../../../../Drivers/STM32H7RSxx_HAL_Driver/Inc/Legacy"/>
-									<listOptionValue builtIn="false" value="../../../../../../../Drivers/CMSIS/Device/ST/STM32H7RSxx/Include"/>
-									<listOptionValue builtIn="false" value="../../../../../../../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/BSP/STM32H7S78-DK"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/STM32H7RSxx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/STM32H7RSxx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Device/ST/STM32H7RSxx/Include"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Include"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1524266837" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
