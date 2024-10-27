@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "HSQStructs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -98,10 +99,14 @@ int main(void)
   BSP_LED_Init(LD1);
   /* USER CODE END 2 */
 
-  uint32_t* myPtr= 0x90000000;
+  project_t* activeProject = 0x90000000;
+  project_t* backupProject = 0x91000000;
 
-  uint32_t myVal = 0xFF;
-  *myPtr = myVal;
+  activeProject->projectNumber = 0xFAFA;
+  backupProject->projectNumber = 0xBCBC;
+
+  //this is to see if these show up in memory.
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -113,10 +118,7 @@ int main(void)
     /* Toggle LD1 every 250ms */
     BSP_LED_Toggle(LD1);
     HAL_Delay(250);
-    //myPtr++;
-    myPtr++;
-    *myPtr = myVal -1;
-    myVal--;
+
   }
   /* USER CODE END 3 */
 }
