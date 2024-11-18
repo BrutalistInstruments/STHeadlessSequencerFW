@@ -26,10 +26,5 @@
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Template_XIP.ioc</locationURI>
 		</link>
-		<link>
-			<name>Doc/README.md</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/README.md</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>
