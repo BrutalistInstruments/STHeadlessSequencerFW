@@ -50,6 +50,7 @@
 									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/STM32H7RSxx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Device/ST/STM32H7RSxx/Include"/>
 									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="&quot;../Application\User&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1524266837" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
