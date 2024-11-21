@@ -51,6 +51,12 @@
 									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Device/ST/STM32H7RSxx/Include"/>
 									<listOptionValue builtIn="false" value="../../../STDependancies/Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="&quot;../Application\User&quot;"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USB_Host_Library/Class/MIDI/Inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USB_Host_Library/Core/Inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USBPD_Library/Core/inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USBPD_Library/Devices/STM32H7RSXX/inc"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1524266837" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
