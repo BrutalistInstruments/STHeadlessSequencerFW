@@ -118,10 +118,10 @@ int main(void)
   /* USER CODE END 2 */
 
   project_t* activeProject = 0x90000000;
-  project_t* backupProject = 0x91000000;
+  // project_t* backupProject = 0x91000000;
 
   activeProject->projectNumber = 0xFAFA;
-  backupProject->projectNumber = 0xBCBC;
+  //backupProject->projectNumber = 0xBCBC;
 
   //this is to see if these show up in memory.
 
