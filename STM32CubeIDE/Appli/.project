@@ -47,6 +47,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Appli/Src/stm32h7rsxx_it.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32H7RSxx_HAL_Driver/stm32h7rsxx_ll_ucpd.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/STDependancies/Drivers/STM32H7RSxx_HAL_Driver/Src/stm32h7rsxx_ll_ucpd.c</locationURI>
+		</link>
+		<link>
 			<name>Middlewares/STM32_USBPD_Library/usbpd_cad_hw_if.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/STDependancies/Middlewares/ST/STM32_USBPD_Library/Devices/STM32H7RSXX/src/usbpd_cad_hw_if.c</locationURI>
