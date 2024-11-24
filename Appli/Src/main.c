@@ -104,6 +104,12 @@ int main(void)
   MX_UART5_Init();
   MX_UART8_Init();
 
+  MX_GPIO_Init();
+  MX_GPDMA1_Init();
+  MX_UART4_Init();
+  MX_UCPD1_Init();
+  MX_USB_HOST_Init();
+
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -366,6 +372,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOO_CLK_ENABLE();
   __HAL_RCC_GPIOP_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
 
   //UART1 TX
   GPIO_InitStruct.Pin = GPIO_PIN_9;
