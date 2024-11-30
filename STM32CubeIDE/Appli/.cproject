@@ -63,6 +63,11 @@
 									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USB_Host_Library/Core/Inc"/>
 									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USBPD_Library/Core/inc"/>
 									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/ST/STM32_USBPD_Library/Devices/STM32H7RSXX/inc"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/Third_Party/FatFs/source"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/Third_Party/FatFs/source/drivers/usb_host"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/Third_Party/FatFs/source/drivers/sd"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/Third_Party/FatFs/source/drivers/sram"/>
+									<listOptionValue builtIn="false" value="../../../STDependancies/Middlewares/Third_Party/FatFs/source/drivers/template"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1524266837" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
