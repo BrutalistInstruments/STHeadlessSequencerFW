@@ -1,13 +1,12 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    stm32h7rsxx_hal_msp.c
-  * @brief   This file provides code for the MSP Initialization
-  *          and de-Initialization codes.
+  * @file   fatfs.c
+  * @brief  Code for fatfs applications
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -17,27 +16,28 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "fatfs.h"
+
+/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN TD */
+/* USER CODE BEGIN PTD */
 
-/* USER CODE END TD */
+/* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN Define */
+/* USER CODE BEGIN PD */
 
-/* USER CODE END Define */
+/* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN Macro */
+/* USER CODE BEGIN PM */
 
-/* USER CODE END Macro */
+/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
@@ -49,39 +49,19 @@
 
 /* USER CODE END PFP */
 
-/* External functions --------------------------------------------------------*/
-/* USER CODE BEGIN ExternalFunctions */
-
-/* USER CODE END ExternalFunctions */
-
+/* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-/**
-  * Initializes the Global MSP.
-  */
-void HAL_MspInit(void)
+
+void MX_FATFS_Init(void)
 {
 
-	  /* USER CODE BEGIN MspInit 0 */
-
-	  /* USER CODE END MspInit 0 */
-
-	  /* System interrupt init*/
-
-	  /* Enable USB Voltage detector */
-	  if(HAL_PWREx_EnableUSBVoltageDetector() != HAL_OK)
-	  {
-	   /* Initialization error */
-	   Error_Handler();
-	  }
-
-	  HAL_PWREx_EnableUSBHSregulator();
-
-	  /* USER CODE BEGIN MspInit 1 */
-
+  /* USER CODE BEGIN Init */
+  /* additional user code for init */
+  /* USER CODE END Init */
 }
 
-/* USER CODE BEGIN 1 */
+/* USER CODE BEGIN Application */
 
-/* USER CODE END 1 */
+/* USER CODE END Application */

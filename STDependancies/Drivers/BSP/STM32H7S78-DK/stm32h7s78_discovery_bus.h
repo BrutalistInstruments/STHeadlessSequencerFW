@@ -27,6 +27,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7s78_discovery_conf.h"
 #include "stm32h7s78_discovery_errno.h"
+#include "stm32h7rsxx_hal_i2c.h"
 #if defined(BSP_USE_CMSIS_OS)
 #include "cmsis_os.h"
 #endif /* BSP_USE_CMSIS_OS */

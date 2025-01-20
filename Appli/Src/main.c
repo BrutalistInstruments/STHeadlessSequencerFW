@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "HSQStructs.h"
+#include "usbpd.h"
+#include "usb_host.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -55,12 +57,15 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PFP */
 static void MPU_AdjustRegionAddressSize(uint32_t Address, uint32_t Size, MPU_Region_InitTypeDef* pInit);
 static void MPU_Config(void);
+static void MX_GPDMA1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_UART4_Init(void);
 static void MX_UART7_Init(void);
 static void MX_UART5_Init(void);
 static void MX_UART8_Init(void);
 static void MX_GPIO_Init(void);
+static void MX_UCPD1_Init(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,6 +107,12 @@ int main(void)
   MX_UART5_Init();
   MX_UART8_Init();
 
+  MX_GPIO_Init();
+  MX_GPDMA1_Init();
+  MX_UART4_Init();
+  MX_UCPD1_Init();
+  MX_USB_HOST_Init();
+
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -117,10 +128,10 @@ int main(void)
   BSP_LED_Init(LD1);
   /* USER CODE END 2 */
 
-  project_t* activeProject = 0x90000000;
-  // project_t* backupProject = 0x91000000;
+  //project_t* activeProject = 0x90000000;
+  //project_t* backupProject = 0x91000000;
 
-  activeProject->projectNumber = 0xFAFA;
+  //activeProject->projectNumber = 0xFAFA;
   //backupProject->projectNumber = 0xBCBC;
 
   //this is to see if these show up in memory.
@@ -134,8 +145,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     /* Toggle LD1 every 250ms */
-    BSP_LED_Toggle(LD1);
-    HAL_Delay(250);
+    //BSP_LED_Toggle(LD1);
+    //HAL_Delay(250);
+    USBPD_DPM_Run();
+    MX_USB_HOST_Process();
 
   }
   /* USER CODE END 3 */
@@ -364,6 +377,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOO_CLK_ENABLE();
   __HAL_RCC_GPIOP_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
 
   //UART1 TX
   GPIO_InitStruct.Pin = GPIO_PIN_9;
@@ -509,6 +523,126 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
+}
+
+
+
+static void MX_UCPD1_Init(void)
+{
+
+  /* USER CODE BEGIN UCPD1_Init 0 */
+
+  /* USER CODE END UCPD1_Init 0 */
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+  LL_DMA_InitTypeDef DMA_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_UCPD1);
+
+  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOM);
+  /**UCPD1 GPIO Configuration
+  PM1   ------> UCPD1_CC2
+  PM0   ------> UCPD1_CC1
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_1|LL_GPIO_PIN_0;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOM, &GPIO_InitStruct);
+
+  /* UCPD1 DMA Init */
+
+  /* GPDMA1_REQUEST_UCPD1_RX Init */
+  DMA_InitStruct.SrcAddress = 0x00000000U;
+  DMA_InitStruct.DestAddress = 0x00000000U;
+  DMA_InitStruct.Direction = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
+  DMA_InitStruct.BlkHWRequest = LL_DMA_HWREQUEST_SINGLEBURST;
+  DMA_InitStruct.DataAlignment = LL_DMA_DATA_ALIGN_ZEROPADD;
+  DMA_InitStruct.SrcBurstLength = 1;
+  DMA_InitStruct.DestBurstLength = 1;
+  DMA_InitStruct.SrcDataWidth = LL_DMA_SRC_DATAWIDTH_BYTE;
+  DMA_InitStruct.DestDataWidth = LL_DMA_DEST_DATAWIDTH_BYTE;
+  DMA_InitStruct.SrcIncMode = LL_DMA_SRC_FIXED;
+  DMA_InitStruct.DestIncMode = LL_DMA_DEST_FIXED;
+  DMA_InitStruct.Priority = LL_DMA_LOW_PRIORITY_LOW_WEIGHT;
+  DMA_InitStruct.BlkDataLength = 0x00000000U;
+  DMA_InitStruct.TriggerMode = LL_DMA_TRIGM_BLK_TRANSFER;
+  DMA_InitStruct.TriggerPolarity = LL_DMA_TRIG_POLARITY_MASKED;
+  DMA_InitStruct.TriggerSelection = 0x00000000U;
+  DMA_InitStruct.Request = LL_GPDMA1_REQUEST_UCPD1_RX;
+  DMA_InitStruct.TransferEventMode = LL_DMA_TCEM_BLK_TRANSFER;
+  DMA_InitStruct.SrcAllocatedPort = LL_DMA_SRC_ALLOCATED_PORT0;
+  DMA_InitStruct.DestAllocatedPort = LL_DMA_DEST_ALLOCATED_PORT0;
+  DMA_InitStruct.LinkAllocatedPort = LL_DMA_LINK_ALLOCATED_PORT1;
+  DMA_InitStruct.LinkStepMode = LL_DMA_LSM_FULL_EXECUTION;
+  DMA_InitStruct.LinkedListBaseAddr = 0x00000000U;
+  DMA_InitStruct.LinkedListAddrOffset = 0x00000000U;
+  LL_DMA_Init(GPDMA1, LL_DMA_CHANNEL_1, &DMA_InitStruct);
+
+  /* GPDMA1_REQUEST_UCPD1_TX Init */
+  DMA_InitStruct.SrcAddress = 0x00000000U;
+  DMA_InitStruct.DestAddress = 0x00000000U;
+  DMA_InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
+  DMA_InitStruct.BlkHWRequest = LL_DMA_HWREQUEST_SINGLEBURST;
+  DMA_InitStruct.DataAlignment = LL_DMA_DATA_ALIGN_ZEROPADD;
+  DMA_InitStruct.SrcBurstLength = 1;
+  DMA_InitStruct.DestBurstLength = 1;
+  DMA_InitStruct.SrcDataWidth = LL_DMA_SRC_DATAWIDTH_BYTE;
+  DMA_InitStruct.DestDataWidth = LL_DMA_DEST_DATAWIDTH_BYTE;
+  DMA_InitStruct.SrcIncMode = LL_DMA_SRC_FIXED;
+  DMA_InitStruct.DestIncMode = LL_DMA_DEST_FIXED;
+  DMA_InitStruct.Priority = LL_DMA_LOW_PRIORITY_LOW_WEIGHT;
+  DMA_InitStruct.BlkDataLength = 0x00000000U;
+  DMA_InitStruct.TriggerMode = LL_DMA_TRIGM_BLK_TRANSFER;
+  DMA_InitStruct.TriggerPolarity = LL_DMA_TRIG_POLARITY_MASKED;
+  DMA_InitStruct.TriggerSelection = 0x00000000U;
+  DMA_InitStruct.Request = LL_GPDMA1_REQUEST_UCPD1_TX;
+  DMA_InitStruct.TransferEventMode = LL_DMA_TCEM_BLK_TRANSFER;
+  DMA_InitStruct.SrcAllocatedPort = LL_DMA_SRC_ALLOCATED_PORT0;
+  DMA_InitStruct.DestAllocatedPort = LL_DMA_DEST_ALLOCATED_PORT0;
+  DMA_InitStruct.LinkAllocatedPort = LL_DMA_LINK_ALLOCATED_PORT1;
+  DMA_InitStruct.LinkStepMode = LL_DMA_LSM_FULL_EXECUTION;
+  DMA_InitStruct.LinkedListBaseAddr = 0x00000000U;
+  DMA_InitStruct.LinkedListAddrOffset = 0x00000000U;
+  LL_DMA_Init(GPDMA1, LL_DMA_CHANNEL_0, &DMA_InitStruct);
+
+  /* UCPD1 interrupt Init */
+  NVIC_SetPriority(UCPD1_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),5, 0));
+  NVIC_EnableIRQ(UCPD1_IRQn);
+
+  /* USER CODE BEGIN UCPD1_Init 1 */
+
+  /* USER CODE END UCPD1_Init 1 */
+  /* USER CODE BEGIN UCPD1_Init 2 */
+
+  /* USER CODE END UCPD1_Init 2 */
+
+}
+
+
+static void MX_GPDMA1_Init(void)
+{
+
+  /* USER CODE BEGIN GPDMA1_Init 0 */
+
+  /* USER CODE END GPDMA1_Init 0 */
+
+  /* Peripheral clock enable */
+  __HAL_RCC_GPDMA1_CLK_ENABLE();
+
+  /* GPDMA1 interrupt Init */
+    HAL_NVIC_SetPriority(GPDMA1_Channel0_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(GPDMA1_Channel0_IRQn);
+    HAL_NVIC_SetPriority(GPDMA1_Channel1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(GPDMA1_Channel1_IRQn);
+
+  /* USER CODE BEGIN GPDMA1_Init 1 */
+
+  /* USER CODE END GPDMA1_Init 1 */
+  /* USER CODE BEGIN GPDMA1_Init 2 */
+
+  /* USER CODE END GPDMA1_Init 2 */
+
 }
 
 static void MX_USART1_UART_Init(void)
