@@ -63,15 +63,23 @@
 void HAL_MspInit(void)
 {
 
-  /* USER CODE BEGIN MspInit 0 */
+	  /* USER CODE BEGIN MspInit 0 */
 
-  /* USER CODE END MspInit 0 */
+	  /* USER CODE END MspInit 0 */
 
-  /* System interrupt init*/
+	  /* System interrupt init*/
 
-  /* USER CODE BEGIN MspInit 1 */
+	  /* Enable USB Voltage detector */
+	  if(HAL_PWREx_EnableUSBVoltageDetector() != HAL_OK)
+	  {
+	   /* Initialization error */
+	   Error_Handler();
+	  }
 
-  /* USER CODE END MspInit 1 */
+	  HAL_PWREx_EnableUSBHSregulator();
+
+	  /* USER CODE BEGIN MspInit 1 */
+
 }
 
 /* USER CODE BEGIN 1 */

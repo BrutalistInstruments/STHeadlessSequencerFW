@@ -128,11 +128,11 @@ int main(void)
   BSP_LED_Init(LD1);
   /* USER CODE END 2 */
 
-  project_t* activeProject = 0x90000000;
-  project_t* backupProject = 0x91000000;
+  //project_t* activeProject = 0x90000000;
+  //project_t* backupProject = 0x91000000;
 
-  activeProject->projectNumber = 0xFAFA;
-  backupProject->projectNumber = 0xBCBC;
+  //activeProject->projectNumber = 0xFAFA;
+  //backupProject->projectNumber = 0xBCBC;
 
   //this is to see if these show up in memory.
 
@@ -145,8 +145,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     /* Toggle LD1 every 250ms */
-    BSP_LED_Toggle(LD1);
-    HAL_Delay(250);
+    //BSP_LED_Toggle(LD1);
+    //HAL_Delay(250);
+    USBPD_DPM_Run();
+    MX_USB_HOST_Process();
 
   }
   /* USER CODE END 3 */

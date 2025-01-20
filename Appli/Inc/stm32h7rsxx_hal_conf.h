@@ -3,11 +3,14 @@
   ******************************************************************************
   * @file    stm32h7rsxx_hal_conf.h
   * @author  MCD Application Team
-  * @brief   HAL configuration file.
+  * @brief   HAL configuration template file.
+  *          This file should be copied to the application folder and renamed
+  *          to stm32h7rsxx_hal_conf.h.
+  *
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -33,7 +36,7 @@
   * @brief This is the list of modules to be used in the HAL driver
   */
 #define HAL_MODULE_ENABLED
-/* #define HAL_ADC_MODULE_ENABLED   */
+#define HAL_ADC_MODULE_ENABLED
 /* #define HAL_CEC_MODULE_ENABLED   */
 /* #define HAL_CORDIC_MODULE_ENABLED   */
 /* #define HAL_CRC_MODULE_ENABLED   */
@@ -48,7 +51,7 @@
 /* #define HAL_GPU2D_MODULE_ENABLED   */
 /* #define HAL_HASH_MODULE_ENABLED   */
 #define HAL_HCD_MODULE_ENABLED
-/* #define HAL_I2C_MODULE_ENABLED   */
+#define HAL_I2C_MODULE_ENABLED
 /* #define HAL_I2S_MODULE_ENABLED   */
 /* #define HAL_I3C_MODULE_ENABLED   */
 /* #define HAL_ICACHE_MODULE_ENABLED   */
@@ -78,7 +81,7 @@
 /* #define HAL_SPI_MODULE_ENABLED   */
 /* #define HAL_SRAM_MODULE_ENABLED   */
 /* #define HAL_TIM_MODULE_ENABLED   */
- #define HAL_UART_MODULE_ENABLED
+#define HAL_UART_MODULE_ENABLED
 /* #define HAL_USART_MODULE_ENABLED   */
 /* #define HAL_WWDG_MODULE_ENABLED   */
 /* #define HAL_XSPI_MODULE_ENABLED   */
