@@ -22,6 +22,8 @@
 #include "usbpd.h"
 #include "usb_host.h"
 
+
+#define memPoolSize 1000000U
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -110,8 +112,8 @@ int main(void)
   MX_GPIO_Init();
   MX_GPDMA1_Init();
   MX_UART4_Init();
-  MX_UCPD1_Init();
-  MX_USB_HOST_Init();
+//  MX_UCPD1_Init();
+//  MX_USB_HOST_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -128,13 +130,45 @@ int main(void)
   BSP_LED_Init(LD1);
   /* USER CODE END 2 */
 
+  midiEvent_t* memPoolHead;
+  midiEvent_t* memPoolTail;
+
+  for(int i = 0; i<memPoolSize; i++)
+  {
+	  midiEvent_t *currentMemPoolPtr = 0x90000000 + (i*sizeof(midiEvent_t));
+
+	  if(i>0)
+	  {
+		  currentMemPoolPtr->reverseLink = 0x90000000 + ((i-1)*sizeof(midiEvent_t));
+	  }else
+	  {
+		  memPoolHead = currentMemPoolPtr;
+	  }
+	  if(i<memPoolSize-1)
+	  {
+		  currentMemPoolPtr->forwardLink = 0x90000000 + ((i+1)*sizeof(midiEvent_t));
+	  }else
+	  {
+		  memPoolTail = currentMemPoolPtr;
+	  }
+
+	  currentMemPoolPtr->messageTimestamp = 0;
+	  currentMemPoolPtr->midiMessage[0] = 0;
+	  currentMemPoolPtr->midiMessage[1] = 0;
+	  currentMemPoolPtr->midiMessage[2] = 0;
+  }
+
+
+
+
+  //midiEvent_t* memPool = malloc(1000*sizeof(midiEvent_t));
+  //int pointerSize = sizeof(memPool[0].forwardLink);
+  //initPool(memPool, 1000);
   //project_t* activeProject = 0x90000000;
   //project_t* backupProject = 0x91000000;
 
   //activeProject->projectNumber = 0xFAFA;
   //backupProject->projectNumber = 0xBCBC;
-
-  //this is to see if these show up in memory.
 
 
   /* Infinite loop */
@@ -147,7 +181,7 @@ int main(void)
     /* Toggle LD1 every 250ms */
     //BSP_LED_Toggle(LD1);
     //HAL_Delay(250);
-    USBPD_DPM_Run();
+    //USBPD_DPM_Run();
     MX_USB_HOST_Process();
 
   }
@@ -203,7 +237,8 @@ static void MPU_Config(void)
   extern uint32_t __EXTRAM_BEGIN;
   extern uint32_t __EXTRAM_SIZE;
   address = (uint32_t)&__EXTRAM_BEGIN;
-  size  = (uint32_t)&__EXTRAM_SIZE;
+  //size  = (uint32_t)&__EXTRAM_SIZE;
+  size = 0x02000000;
 #else
 #error "Compiler toolchain is unsupported"
 #endif
