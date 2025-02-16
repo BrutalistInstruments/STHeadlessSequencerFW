@@ -18,12 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "HSQStructs.h"
 #include "usbpd.h"
 #include "usb_host.h"
+#include "memControl.h"
 
 
-#define memPoolSize 1000000U
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -130,49 +130,19 @@ int main(void)
   BSP_LED_Init(LD1);
   /* USER CODE END 2 */
 
-  midiEvent_t* memPoolHead;
-  midiEvent_t* memPoolTail;
-
-  for(int i = 0; i<memPoolSize; i++)
-  {
-	  midiEvent_t *currentMemPoolPtr = 0x90000000 + (i*sizeof(midiEvent_t));
-
-	  if(i>0)
-	  {
-		  currentMemPoolPtr->reverseLink = 0x90000000 + ((i-1)*sizeof(midiEvent_t));
-	  }else
-	  {
-		  memPoolHead = currentMemPoolPtr;
-	  }
-	  if(i<memPoolSize-1)
-	  {
-		  currentMemPoolPtr->forwardLink = 0x90000000 + ((i+1)*sizeof(midiEvent_t));
-	  }else
-	  {
-		  memPoolTail = currentMemPoolPtr;
-	  }
-
-	  currentMemPoolPtr->messageTimestamp = 0;
-	  currentMemPoolPtr->midiMessage[0] = 0;
-	  currentMemPoolPtr->midiMessage[1] = 0;
-	  currentMemPoolPtr->midiMessage[2] = 0;
-  }
-
-
-
-
-  //midiEvent_t* memPool = malloc(1000*sizeof(midiEvent_t));
-  //int pointerSize = sizeof(memPool[0].forwardLink);
-  //initPool(memPool, 1000);
-  //project_t* activeProject = 0x90000000;
-  //project_t* backupProject = 0x91000000;
-
-  //activeProject->projectNumber = 0xFAFA;
-  //backupProject->projectNumber = 0xBCBC;
-
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  initMemoryPoolActiveProject();
+  initMemoryPoolRecoveryProject();
+
+  uint8_t testSize1 = activeProjectSpaceAvailiblePercent();
+  uint32_t testSize2 = activeProjectSpaceAvailibleEvents();
+  uint8_t testSize3 = recoveryProjectSpaceAvailiblePercent();
+  uint32_t testSize4 = recoveryProjectSpaceAvailibleEvents();
+
+
   while (1)
   {
     /* USER CODE END WHILE */

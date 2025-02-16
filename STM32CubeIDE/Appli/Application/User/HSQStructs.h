@@ -8,6 +8,9 @@
 #ifndef APPLICATION_USER_HSQSTRUCTS_H_
 #define APPLICATION_USER_HSQSTRUCTS_H_
 
+#include <stdint.h>
+
+
 //In hierarchical order
 
 typedef struct midiEvent_t
@@ -52,38 +55,9 @@ typedef struct
 {
 	uint16_t projectNumber; //padding for memory check
 	song_t* songArray;
-
-
+	pattern_t* patternArray;
 
 }project_t;
-
-void initPool(midiEvent_t *inHead, size_t inSize)
-{
-	for(int i = 0; i<inSize; i++)
-	{
-		if(i<inSize-1)
-		{
-			inHead[i].forwardLink = &(inHead[i+1]);
-		}else
-		{
-			inHead[i].forwardLink = &(inHead[0]);
-		}
-		if(i>1)
-		{
-			inHead[i].reverseLink = &(inHead[i-1]);
-		}else
-		{
-			inHead[i].reverseLink = &(inHead[inSize-1]);
-		}
-
-		inHead[i].midiMessage[0] = 0;
-		inHead[i].midiMessage[1] = 0;
-		inHead[i].midiMessage[2] = 0;
-
-		inHead[i].messageTimestamp = 0;
-
-	}
-}
 
 
 
