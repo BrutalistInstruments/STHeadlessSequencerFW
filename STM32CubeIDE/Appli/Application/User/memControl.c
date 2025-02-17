@@ -86,10 +86,7 @@ void initMemoryPoolRecoveryProject()
 
 void saveProject()
 {
-
-	//set memory pool size
-
-
+	memcpy(MEM_POOL_START_ADDRESS_RECOVERY, MEM_POOL_START_ADDRESS_ACTIVE, MEM_POOL_SIZE*sizeof(midiEvent_t));
 }
 
 uint8_t activeProjectSpaceAvailiblePercent()
@@ -120,11 +117,12 @@ void newProject()
 
 void loadProject()
 {
-
+	//this loads a project from the SD card. We'll need SD card code to make that happen
 }
 
 void addSong()
 {
+
 
 }
 
@@ -141,11 +139,52 @@ void addPattern_p(project_t hostProject)
 void addTrack(pattern_t hostPattern)
 {
 
+
 }
 
-void addEvent(track_t hostTrack)
+void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp)
 {
 
+	//take an event out of the memory pool, and make an event out of it.
+	activeMemPoolHead->midiMessage[0] = inputMidiMessage[0];
+	activeMemPoolHead->midiMessage[1] = inputMidiMessage[1];
+	activeMemPoolHead->midiMessage[2] = inputMidiMessage[2];
+
+	activeMemPoolHead->messageTimestamp = inputTimestamp;
+
+	midiEvent_t* futureNewHead = activeMemPoolHead->forwardLink;
+
+	bool inserted = false;
+	midiEvent_t* currentPosition = hostTrack->eventArrayHead;
+
+	while(inserted == false)
+	{
+		if(currentPosition->messageTimestamp < inputTimestamp)
+		{
+			//we need to insert our event before the current event
+			activeMemPoolHead->forwardLink = currentPosition;
+
+			if(hostTrack->eventArrayHead == currentPosition)
+			{
+				//if we're at the front of the line, we only need to make one move.
+
+				hostTrack->eventArrayHead = inputEvent;
+				//no need to mess with reverse links, since we are at the beginning.
+			}else
+			{
+				activeMemPoolHead->reverseLink = currentPosition->reverseLink;
+				currentPosition->reverseLink = activeMemPoolHead;
+			}
+			inserted = true;
+		}else
+		{
+			//move to the next node
+			currentPosition = currentPosition->forwardLink;
+		}
+	}
+
+	//now that we've gotten all of the stuff figured out, we can release the link from our memory pool.
+	activeMemPoolHead = futureNewHead;
 }
 
 
@@ -166,6 +205,18 @@ void recoverTrack(track_t targetTrack)
 }
 
 void recoverEvent(midiEvent_t targetEvent)
+{
+
+}
+
+//this will overwrite the entire active project.
+void recoverProject()
+{
+	memcpy(MEM_POOL_START_ADDRESS_ACTIVE, MEM_POOL_START_ADDRESS_RECOVERY, MEM_POOL_SIZE*sizeof(midiEvent_t));
+}
+
+//this will initialize our system with a completely blank project and memory pool.
+void initMemorySystemBlank()
 {
 
 }

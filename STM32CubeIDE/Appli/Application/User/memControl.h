@@ -33,14 +33,18 @@ void addSong();
 void addPattern_s(song_t hostSong);
 void addPattern_p(project_t hostProject);
 void addTrack(pattern_t hostPattern);
-void addEvent(track_t hostTrack);
+void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp);
 
 
 //recovery system
 void recoverSong(song_t targetSong);
 void recoverPattern(pattern_t targetPattern);
 void recoverTrack(track_t targetTrack);
-void recoverEvent(midiEvent_t targetEvent);
+void recoverEvent(midiEvent_t targetEvent, midiEvent_t inputEvent);
+void recoverProject();
+
+//High level initialization
+void initMemorySystemBlank();
 
 
 
