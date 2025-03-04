@@ -10,6 +10,9 @@
 
 #include "HSQStructs.h"
 #include <stdint.h>
+#if(ON_TARGET_TEST)
+#include "onTargetTests.h"
+#endif
 
 #define MEM_POOL_SIZE 1000000U //this is the size in Midi Events
 #define MEM_POOL_START_ADDRESS_ACTIVE 0x90000000

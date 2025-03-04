@@ -7,10 +7,30 @@
 
 #include "memControl.h"
 
-
-
+#if(ON_TARGET_TEST)
+midiEvent_t* activeMemPoolHead;
+midiEvent_t* activeMemPoolTail;
+project_t* activeProject;
+pattern_t* activePatternHead;
+pattern_t* activePatternTail;
+track_t* activeTrackHead;
+track_t* activeTrackTail;
+song_t* activeSongHead;
+song_t* activeSongTail;
+midiEvent_t* recoveryMemPoolHead;
+midiEvent_t* recoveryMemPoolTail;
+project_t* recoveryProject;
+pattern_t* recoveryPatternHead;
+pattern_t* recoveryPatternTail;
+track_t* recoveryTrackHead;
+track_t* recoveryTrackTail;
+song_t* recoverySongHead;
+song_t* recoverySongTail;
+uint8_t projectCounter = 0;
+uint16_t songCounter = 0;
+uint16_t patternCounter = 0;
+#else
 //Static Globals
-
 static midiEvent_t* activeMemPoolHead;
 static midiEvent_t* activeMemPoolTail;
 static project_t* activeProject;
@@ -18,6 +38,8 @@ static pattern_t* activePatternHead;
 static pattern_t* activePatternTail;
 static track_t* activeTrackHead;
 static track_t* activeTrackTail;
+static song_t* activeSongHead;
+static song_t* activeSongTail;
 
 static midiEvent_t* recoveryMemPoolHead;
 static midiEvent_t* recoveryMemPoolTail;
@@ -26,6 +48,14 @@ static pattern_t* recoveryPatternHead;
 static pattern_t* recoveryPatternTail;
 static track_t* recoveryTrackHead;
 static track_t* recoveryTrackTail;
+static song_t* recoverySongHead;
+static song_t* recoverySongTail;
+
+static uint8_t projectCounter = 0;
+static uint16_t songCounter = 0;
+static uint16_t patternCounter = 0;
+#endif
+
 
 //This intializes the memory pool of a new project. Creates a fully blank project.
 void initMemoryPoolActiveProject()
@@ -112,6 +142,30 @@ uint32_t recoveryProjectSpaceAvailibleEvents()
 //Adding new structures
 void newProject()
 {
+	//a project is about a quarter of the size of a midi event, so we can just move this back one.
+    uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail; //we need to store the current address before we lose it.
+	activeMemPoolTail = activeMemPoolTail->reverseLink;
+
+	uint32_t replacePointerAddrReserve = (uint32_t)recoveryMemPoolTail; //we need to store the current address before we lose it.
+	recoveryMemPoolTail = recoveryMemPoolTail->reverseLink;
+
+	project_t* newProjectActive = (project_t*)replacePointerAddrActive;
+	project_t* newProjectReserve = (project_t*)replacePointerAddrReserve;
+
+	newProjectActive->projectNumber = projectCounter; //we'll just keep it at this for now. There should be some more internal logic later.
+	newProjectReserve->projectNumber = projectCounter;
+	projectCounter++;
+
+	newProjectActive->songArrayHead = 0;
+	newProjectReserve->songArrayHead = 0;
+
+	newProjectActive->patternArrayHead = 0;
+	newProjectReserve->patternArrayHead = 0;
+
+
+	activeProject = newProjectActive;
+	recoveryProject = newProjectReserve;
+
 
 }
 
@@ -122,12 +176,30 @@ void loadProject()
 
 void addSong()
 {
+	uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail; //we need to store the current address before we lose it.
+	activeMemPoolTail = activeMemPoolTail->reverseLink;
+
+	song_t *newSong = (song_t*)replacePointerAddrActive;
+	newSong->songNumber = songCounter;
+
+	song_t* songIterator = activeProject->songArrayHead;
+
+	while(songIterator->nextSong != 0)
+	{
+		songIterator = (song_t*)songIterator->nextSong;
+	}
+
+	songIterator->nextSong = newSong;
+	newSong->prevSong = (song_t*)songIterator;
+	newSong->nextSong = 0;
+	songCounter++;
 
 
 }
 
 void addPattern_s(song_t hostSong)
 {
+
 
 }
 
@@ -154,28 +226,29 @@ void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTime
 
 	midiEvent_t* futureNewHead = activeMemPoolHead->forwardLink;
 
-	bool inserted = false;
-	midiEvent_t* currentPosition = hostTrack->eventArrayHead;
+	uint8_t inserted = 0;
+	midiEvent_t* currentPosition = hostTrack.eventArrayHead;
 
-	while(inserted == false)
+	while(inserted == 0)
 	{
 		if(currentPosition->messageTimestamp < inputTimestamp)
 		{
 			//we need to insert our event before the current event
 			activeMemPoolHead->forwardLink = currentPosition;
 
-			if(hostTrack->eventArrayHead == currentPosition)
+			if(hostTrack.eventArrayHead == currentPosition)
 			{
 				//if we're at the front of the line, we only need to make one move.
 
-				hostTrack->eventArrayHead = inputEvent;
+				hostTrack.eventArrayHead = activeMemPoolHead;
+
 				//no need to mess with reverse links, since we are at the beginning.
 			}else
 			{
 				activeMemPoolHead->reverseLink = currentPosition->reverseLink;
 				currentPosition->reverseLink = activeMemPoolHead;
 			}
-			inserted = true;
+			inserted = 1;
 		}else
 		{
 			//move to the next node
@@ -204,7 +277,7 @@ void recoverTrack(track_t targetTrack)
 
 }
 
-void recoverEvent(midiEvent_t targetEvent)
+void recoverEvent(midiEvent_t targetEvent, midiEvent_t inputEvent)
 {
 
 }

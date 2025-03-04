@@ -21,6 +21,10 @@
 #include "usbpd.h"
 #include "usb_host.h"
 #include "memControl.h"
+#include "onTargetTests.h"
+
+
+#define ON_TARGET_TEST 1
 
 
 
@@ -137,10 +141,20 @@ int main(void)
   initMemoryPoolActiveProject();
   initMemoryPoolRecoveryProject();
 
+
+
+
+
+#if(ON_TARGET_TEST)
+
+  runTests();
+
+
   uint8_t testSize1 = activeProjectSpaceAvailiblePercent();
   uint32_t testSize2 = activeProjectSpaceAvailibleEvents();
   uint8_t testSize3 = recoveryProjectSpaceAvailiblePercent();
   uint32_t testSize4 = recoveryProjectSpaceAvailibleEvents();
+#endif
 
 
   while (1)

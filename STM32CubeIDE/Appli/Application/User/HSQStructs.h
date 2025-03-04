@@ -45,6 +45,8 @@ typedef struct
 {
 	uint16_t songNumber; //this probably won't stick around, just padding the struct size a bit.
 	pattern_t* patternArray;
+	struct song_t* nextSong;
+	struct song_t* prevSong;
 	//there should be some kind of arrangement data here also.
 	//I'm not 100% sure how we want to tackle that yet.
 
@@ -54,8 +56,8 @@ typedef struct
 typedef struct
 {
 	uint16_t projectNumber; //padding for memory check
-	song_t* songArray;
-	pattern_t* patternArray;
+	song_t* songArrayHead;
+	pattern_t* patternArrayHead;
 
 }project_t;
 
