@@ -18,6 +18,7 @@
 #define MEM_POOL_START_ADDRESS_ACTIVE 0x90000000
 
 #define MEM_POOL_START_ADDRESS_RECOVERY 0x90F42410 //1000000 * 16bytes = 0x00F4 2400
+#define MEM_RECOVERY_OFFSET 0x00F42410
 
 
 //memory pool control
@@ -33,17 +34,17 @@ uint32_t recoveryProjectSpaceAvailibleEvents();
 void newProject();
 void loadProject();
 void addSong();
-void addPattern_s(song_t hostSong);
-void addPattern_p(project_t hostProject);
-void addTrack(pattern_t hostPattern);
-void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp);
+void addPattern_s(song_t *hostSong);
+void addPattern_p(project_t *hostProject);
+void addTrack(pattern_t *hostPattern);
+void addEvent(track_t *hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp);
 
 
 //recovery system
-void recoverSong(song_t targetSong);
-void recoverPattern(pattern_t targetPattern);
-void recoverTrack(track_t targetTrack);
-void recoverEvent(midiEvent_t targetEvent, midiEvent_t inputEvent);
+void recoverSong(song_t *targetSong);
+void recoverPattern(pattern_t *targetPattern);
+void recoverTrack(track_t *targetTrack);
+void recoverEvent(midiEvent_t *targetEvent);
 void recoverProject();
 
 //High level initialization

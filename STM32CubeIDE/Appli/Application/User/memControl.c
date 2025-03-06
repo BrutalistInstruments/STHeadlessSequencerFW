@@ -34,8 +34,6 @@ uint16_t patternCounter = 0;
 static midiEvent_t* activeMemPoolHead;
 static midiEvent_t* activeMemPoolTail;
 static project_t* activeProject;
-static pattern_t* activePatternHead;
-static pattern_t* activePatternTail;
 static track_t* activeTrackHead;
 static track_t* activeTrackTail;
 static song_t* activeSongHead;
@@ -44,8 +42,6 @@ static song_t* activeSongTail;
 static midiEvent_t* recoveryMemPoolHead;
 static midiEvent_t* recoveryMemPoolTail;
 static project_t* recoveryProject;
-static pattern_t* recoveryPatternHead;
-static pattern_t* recoveryPatternTail;
 static track_t* recoveryTrackHead;
 static track_t* recoveryTrackTail;
 static song_t* recoverySongHead;
@@ -197,24 +193,122 @@ void addSong()
 
 }
 
-void addPattern_s(song_t hostSong)
+void addPattern_s(song_t *hostSong)
 {
+	//pattern size = 23 bytes.
+	uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail;
+	activeMemPoolTail = activeMemPoolTail->reverseLink->reverseLink;
 
+	pattern_t *newPattern = (pattern_t*) replacePointerAddrActive;
+	newPattern->patternNumber = patternCounter;
+	newPattern->BPM = DEFAULT_BPM;
+	newPattern->swing = DEFAULT_SWING;
+	newPattern->trackMute = 0;
+	newPattern->trackSolo = 0;
+	newPattern->trackArray = 0;
+	newPattern->patternForwardLink = 0;
+	newPattern->songForwardLink = 0;
+
+	//is this the first pattern in host song?
+	if((uint32_t)hostSong->patternArray == 0)
+	{
+		hostSong->patternArray = newPattern;
+	}else
+	{
+		pattern_t* patternIterator = hostSong->patternArray;
+		while((uint32_t)patternIterator->songForwardLink != 0)
+		{
+			patternIterator = patternIterator->songForwardLink;
+		}
+
+		patternIterator->songForwardLink = newPattern;
+		newPattern->songReverseLink = patternIterator;
+	}
+
+	//first pattern in the project as well
+	if((uint32_t)activeProject->patternArrayHead == 0)
+	{
+		activeProject->patternArrayHead = newPattern;
+	}else
+	{
+		pattern_t* patternIterator = activeProject->patternArrayHead;
+		while((uint32_t)patternIterator->patternForwardLink != 0)
+		{
+			patternIterator->patternForwardLink;
+		}
+
+		patternIterator->patternForwardLink = newPattern;
+		newPattern->patternReverseLink = patternIterator;
+	}
+
+	patternCounter++;
+}
+
+void addPattern_p(project_t *hostProject)
+{
+	//pattern size = 23 bytes.
+	uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail;
+	activeMemPoolTail = activeMemPoolTail->reverseLink->reverseLink;
+
+	pattern_t *newPattern = (pattern_t*) replacePointerAddrActive;
+	newPattern->patternNumber = patternCounter;
+	newPattern->BPM = DEFAULT_BPM;
+	newPattern->swing = DEFAULT_SWING;
+	newPattern->trackMute = 0;
+	newPattern->trackSolo = 0;
+	newPattern->trackArray = 0;
+	newPattern->songForwardLink = 0;
+	newPattern->songReverseLink = 0;
+
+	if((uint32_t)hostProject->patternArrayHead == 0)
+	{
+		hostProject->patternArrayHead = newPattern;
+	}else
+	{
+		pattern_t* patternIterator = hostProject->patternArrayHead;
+		while(patternIterator->patternForwardLink != 0)
+		{
+			patternIterator = patternIterator->patternForwardLink;
+		}
+
+		patternIterator->patternForwardLink = newPattern;
+		newPattern->patternReverseLink = patternIterator;
+	}
+
+	patternCounter++;
 
 }
 
-void addPattern_p(project_t hostProject)
+void addTrack(pattern_t *hostPattern)
 {
+	//trackSize =
+	uint32_t replacePointerAddrActive = (uint32_t) activeMemPoolTail;
+	activeMemPoolTail = activeMemPoolTail->reverseLink;
+
+	track_t* newTrack = (track_t*) replacePointerAddrActive;
+	newTrack->channel = 0;
+	newTrack->eventArrayHead = 0;
+	newTrack->forwardLink = 0;
+	newTrack->outPort = 0;
+	newTrack->playHead = 0;
+
+	if((uint32_t)hostPattern->trackArray == 0)
+	{
+		hostPattern->trackArray = newTrack;
+	}else
+	{
+		track_t* trackIterator = hostPattern->trackArray;
+		while((uint32_t) trackIterator->forwardLink !=0 )
+		{
+			trackIterator = trackIterator->forwardLink;
+		}
+
+		trackIterator->forwardLink = newTrack;
+	}
 
 }
 
-void addTrack(pattern_t hostPattern)
-{
-
-
-}
-
-void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp)
+void addEvent(track_t *hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTimestamp)
 {
 
 	//take an event out of the memory pool, and make an event out of it.
@@ -227,7 +321,7 @@ void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTime
 	midiEvent_t* futureNewHead = activeMemPoolHead->forwardLink;
 
 	uint8_t inserted = 0;
-	midiEvent_t* currentPosition = hostTrack.eventArrayHead;
+	midiEvent_t* currentPosition = hostTrack->eventArrayHead;
 
 	while(inserted == 0)
 	{
@@ -236,11 +330,11 @@ void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTime
 			//we need to insert our event before the current event
 			activeMemPoolHead->forwardLink = currentPosition;
 
-			if(hostTrack.eventArrayHead == currentPosition)
+			if(hostTrack->eventArrayHead == currentPosition)
 			{
 				//if we're at the front of the line, we only need to make one move.
 
-				hostTrack.eventArrayHead = activeMemPoolHead;
+				hostTrack->eventArrayHead = activeMemPoolHead;
 
 				//no need to mess with reverse links, since we are at the beginning.
 			}else
@@ -262,30 +356,32 @@ void addEvent(track_t hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTime
 
 
 //recovery system
-void recoverSong(song_t targetSong)
+void recoverSong(song_t *targetSong)
+{
+
+
+}
+
+void recoverPattern(pattern_t *targetPattern)
 {
 
 }
 
-void recoverPattern(pattern_t targetPattern)
+void recoverTrack(track_t *targetTrack)
 {
 
 }
 
-void recoverTrack(track_t targetTrack)
+void recoverEvent(midiEvent_t *targetEvent)
 {
 
-}
-
-void recoverEvent(midiEvent_t targetEvent, midiEvent_t inputEvent)
-{
 
 }
 
 //this will overwrite the entire active project.
 void recoverProject()
 {
-	memcpy(MEM_POOL_START_ADDRESS_ACTIVE, MEM_POOL_START_ADDRESS_RECOVERY, MEM_POOL_SIZE*sizeof(midiEvent_t));
+	memcpy((project_t*)MEM_POOL_START_ADDRESS_ACTIVE, (project_t*)MEM_POOL_START_ADDRESS_RECOVERY, MEM_POOL_SIZE*sizeof(midiEvent_t));
 }
 
 //this will initialize our system with a completely blank project and memory pool.

@@ -13,6 +13,9 @@
 
 //In hierarchical order
 
+#define DEFAULT_BPM 120
+#define DEFAULT_SWING 0
+
 typedef struct midiEvent_t
 {
 	uint8_t midiMessage[3];
@@ -32,13 +35,16 @@ typedef struct track_t
 
 typedef struct pattern_t
 {
+	uint16_t patternNumber;
 	uint16_t BPM;
 	uint8_t swing;
 	uint8_t trackMute;
 	uint8_t trackSolo;
-	track_t* trackHead;
 	track_t* trackArray;
-	struct pattern_t *forwardLink;
+	struct pattern_t *patternForwardLink;
+	struct pattern_t *patternReverseLink;
+	struct pattern_t *songForwardLink;
+	struct pattern_t *songReverseLink;
 }pattern_t;
 
 typedef struct

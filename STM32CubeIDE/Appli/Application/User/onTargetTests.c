@@ -88,12 +88,20 @@ uint8_t blankMemoryChecker(midiEvent_t *head, midiEvent_t *tail)
 //initalize project and memory structure.
 bool memControlTest1()
 {
+	//init structure
+	initMemoryPoolActiveProject();
+	initMemoryPoolRecoveryProject();
+
+	//check to make sure that everything is working
+
 	return false;
 }
 
 //insert event into track
 bool memControlTest2()
 {
+
+
 	return false;
 
 }
@@ -135,6 +143,12 @@ bool memControlTest8()
 	return false;
 }
 
+//de-initialize any allocated memory. Erase full SDRAM chip.
+void eraseMemory()
+{
+
+
+}
 
 
 
