@@ -1,7 +1,6 @@
 # STM32CubeIDE
 .metadata/
 .settings/
-*.ld
 Appli/Debug
 STM32CubeIDE/Appli/Debug
 STM32CubeIDE/Boot/Debug

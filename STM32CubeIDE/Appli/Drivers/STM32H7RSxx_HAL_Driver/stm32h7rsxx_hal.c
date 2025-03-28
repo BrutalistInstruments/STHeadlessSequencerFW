@@ -177,7 +177,7 @@ HAL_StatusTypeDef HAL_Init(void)
   else
   {
     /* Init the low level hardware */
-    HAL_MspInit();
+   // HAL_MspInit();
   }
 
   /* Return function status */

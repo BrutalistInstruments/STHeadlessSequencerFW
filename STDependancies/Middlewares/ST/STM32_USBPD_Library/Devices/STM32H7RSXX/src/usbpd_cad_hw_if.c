@@ -23,6 +23,7 @@
 #include "usbpd_def.h"
 #include "usbpd_cad_hw_if.h"
 #include "usbpd_hw_if.h"
+#include "stm32h7rsxx_ll_ucpd.h"
 #if defined(_TRACE)
 #include "usbpd_trace.h"
 #endif /* _TRACE*/
