@@ -7,14 +7,14 @@
 
 #include "memControl.h"
 
-#if(ON_TARGET_TEST)
+#if(ON_TARGET_TEST == 1)
 midiEvent_t* activeMemPoolHead;
 midiEvent_t* activeMemPoolTail;
 project_t* activeProject;
 pattern_t* activePatternHead;
 pattern_t* activePatternTail;
-track_t* activeTrackHead;
-track_t* activeTrackTail;
+//track_t* activeTrackHead;
+//track_t* activeTrackTail;
 song_t* activeSongHead;
 song_t* activeSongTail;
 midiEvent_t* recoveryMemPoolHead;
@@ -29,6 +29,7 @@ song_t* recoverySongTail;
 uint8_t projectCounter = 0;
 uint16_t songCounter = 0;
 uint16_t patternCounter = 0;
+midiEvent_t* problemEvent;
 #else
 //Static Globals
 static midiEvent_t* activeMemPoolHead;
@@ -56,7 +57,7 @@ static uint16_t patternCounter = 0;
 //This intializes the memory pool of a new project. Creates a fully blank project.
 void initMemoryPoolActiveProject()
 {
-	for(int i = 0; i<=MEM_POOL_SIZE; i++)
+	for(int i = 0; i<MEM_POOL_SIZE+1; i++)
 	{
 		  midiEvent_t *currentMemPoolPtr = MEM_POOL_START_ADDRESS_ACTIVE + (i*sizeof(midiEvent_t));
 
@@ -66,13 +67,15 @@ void initMemoryPoolActiveProject()
 		  }else
 		  {
 			  activeMemPoolHead = currentMemPoolPtr;
+			  activeMemPoolHead->reverseLink = 0;
 		  }
-		  if(i<MEM_POOL_SIZE-1)
+		  if(i<MEM_POOL_SIZE)
 		  {
 			  currentMemPoolPtr->forwardLink = MEM_POOL_START_ADDRESS_ACTIVE + ((i+1)*sizeof(midiEvent_t));
 		  }else
 		  {
 			  activeMemPoolTail = currentMemPoolPtr;
+			  activeMemPoolTail->forwardLink = 0;
 		  }
 
 		  currentMemPoolPtr->messageTimestamp = 0;
@@ -80,6 +83,7 @@ void initMemoryPoolActiveProject()
 		  currentMemPoolPtr->midiMessage[1] = 0;
 		  currentMemPoolPtr->midiMessage[2] = 0;
 	}
+	problemEvent = 0x90404930;
 }
 
 void initMemoryPoolRecoveryProject()
@@ -94,6 +98,7 @@ void initMemoryPoolRecoveryProject()
 		  }else
 		  {
 			  recoveryMemPoolHead = currentMemPoolPtr;
+			  recoveryMemPoolHead->reverseLink = 0;
 		  }
 		  if(i<MEM_POOL_SIZE-1)
 		  {
@@ -101,6 +106,7 @@ void initMemoryPoolRecoveryProject()
 		  }else
 		  {
 			  recoveryMemPoolTail = currentMemPoolPtr;
+			  recoveryMemPoolTail->forwardLink = 0;
 		  }
 
 		  currentMemPoolPtr->messageTimestamp = 0;
@@ -141,9 +147,11 @@ void newProject()
 	//a project is about a quarter of the size of a midi event, so we can just move this back one.
     uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail; //we need to store the current address before we lose it.
 	activeMemPoolTail = activeMemPoolTail->reverseLink;
+	activeMemPoolTail->forwardLink = 0; //erase forward link
 
 	uint32_t replacePointerAddrReserve = (uint32_t)recoveryMemPoolTail; //we need to store the current address before we lose it.
 	recoveryMemPoolTail = recoveryMemPoolTail->reverseLink;
+	recoveryMemPoolTail->forwardLink = 0;
 
 	project_t* newProjectActive = (project_t*)replacePointerAddrActive;
 	project_t* newProjectReserve = (project_t*)replacePointerAddrReserve;
@@ -161,6 +169,12 @@ void newProject()
 
 	activeProject = newProjectActive;
 	recoveryProject = newProjectReserve;
+
+	//All projects need to have at least one pattern and one track.
+
+	addPattern_p(newProjectActive);
+	addTrack(newProjectActive->patternArrayHead);
+
 
 
 }
@@ -249,6 +263,7 @@ void addPattern_p(project_t *hostProject)
 	//pattern size = 23 bytes.
 	uint32_t replacePointerAddrActive = (uint32_t)activeMemPoolTail;
 	activeMemPoolTail = activeMemPoolTail->reverseLink->reverseLink;
+	activeMemPoolTail->forwardLink = 0;
 
 	pattern_t *newPattern = (pattern_t*) replacePointerAddrActive;
 	newPattern->patternNumber = patternCounter;
@@ -284,6 +299,7 @@ void addTrack(pattern_t *hostPattern)
 	//trackSize =
 	uint32_t replacePointerAddrActive = (uint32_t) activeMemPoolTail;
 	activeMemPoolTail = activeMemPoolTail->reverseLink;
+	activeMemPoolTail->forwardLink = 0;
 
 	track_t* newTrack = (track_t*) replacePointerAddrActive;
 	newTrack->channel = 0;
@@ -320,38 +336,44 @@ void addEvent(track_t *hostTrack, uint8_t inputMidiMessage[3], uint32_t inputTim
 
 	midiEvent_t* futureNewHead = activeMemPoolHead->forwardLink;
 
-	uint8_t inserted = 0;
-	midiEvent_t* currentPosition = hostTrack->eventArrayHead;
 
-	while(inserted == 0)
+	if(hostTrack->eventArrayHead == 0)
 	{
-		if(currentPosition->messageTimestamp < inputTimestamp)
+		hostTrack->eventArrayHead = activeMemPoolHead;
+	}else //we only care about finding where to insert if we already have events in the track.
+	{
+		uint8_t inserted = 0;
+		midiEvent_t* currentPosition = hostTrack->eventArrayHead;
+		while(inserted == 0)
 		{
-			//we need to insert our event before the current event
-			activeMemPoolHead->forwardLink = currentPosition;
-
-			if(hostTrack->eventArrayHead == currentPosition)
+			if(currentPosition->messageTimestamp < inputTimestamp)
 			{
-				//if we're at the front of the line, we only need to make one move.
+				//we need to insert our event before the current event
+				activeMemPoolHead->forwardLink = currentPosition;
 
-				hostTrack->eventArrayHead = activeMemPoolHead;
+				if(hostTrack->eventArrayHead == currentPosition)
+				{
+					//if we're at the front of the line, we only need to make one move.
 
-				//no need to mess with reverse links, since we are at the beginning.
+					hostTrack->eventArrayHead = activeMemPoolHead;
+
+					//no need to mess with reverse links, since we are at the beginning.
+				}else
+				{
+					activeMemPoolHead->reverseLink = currentPosition->reverseLink;
+					currentPosition->reverseLink = activeMemPoolHead;
+				}
+				inserted = 1;
 			}else
 			{
-				activeMemPoolHead->reverseLink = currentPosition->reverseLink;
-				currentPosition->reverseLink = activeMemPoolHead;
+				//move to the next node
+				currentPosition = currentPosition->forwardLink;
 			}
-			inserted = 1;
-		}else
-		{
-			//move to the next node
-			currentPosition = currentPosition->forwardLink;
 		}
 	}
-
 	//now that we've gotten all of the stuff figured out, we can release the link from our memory pool.
 	activeMemPoolHead = futureNewHead;
+	activeMemPoolHead->reverseLink = 0;
 }
 
 
@@ -387,5 +409,6 @@ void recoverProject()
 //this will initialize our system with a completely blank project and memory pool.
 void initMemorySystemBlank()
 {
+
 
 }

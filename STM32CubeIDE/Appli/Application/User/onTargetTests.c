@@ -8,11 +8,17 @@
 #include "onTargetTests.h"
 //#include <stdbool.h> //This doesn't seen to work for some reason
 
+extern midiEvent_t* activeMemPoolHead;
+extern midiEvent_t* activeMemPoolTail;
+//extern track_t* activeTrackHead;
+extern project_t* activeProject;
 
 //this is our test runner on target.
 //if any tests fail, it returns a 0.
 bool runTests()
 {
+	memControlTest1();
+	memControlTest2();
 	return true;
 }
 
@@ -92,17 +98,65 @@ bool memControlTest1()
 	initMemoryPoolActiveProject();
 	initMemoryPoolRecoveryProject();
 
-	//check to make sure that everything is working
 
-	return false;
+	//check to make sure that everything is working
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+		return false;
+	}
+
+
+	newProject();
+
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+	return true;
 }
 
 //insert event into track
 bool memControlTest2()
 {
+	//for now, we'll just use the first track that we just made
+	track_t* trackToTest = activeProject->patternArrayHead->trackArray;
 
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
 
-	return false;
+	uint8_t midiMessage[] = {0x71, 0x3C, 0x7F}; //middle C, played on channel 1, full velocity
+
+	addEvent(trackToTest, midiMessage, 5000);
+
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+	if(trackToTest->eventArrayHead->messageTimestamp != 5000)
+	{
+		return false;
+	}
+
+	if(trackToTest->eventArrayHead->midiMessage[0] != 0x71)
+	{
+		return false;
+	}
+
+	if(trackToTest->eventArrayHead->midiMessage[0] != 0x3C)
+	{
+		return false;
+	}
+
+	if(trackToTest->eventArrayHead->midiMessage[0] != 0x7F)
+	{
+		return false;
+	}
+
+	return true;
 
 }
 

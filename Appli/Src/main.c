@@ -24,9 +24,6 @@
 #include "onTargetTests.h"
 
 
-#define ON_TARGET_TEST 1
-
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

@@ -16,6 +16,8 @@
 #define true 1
 #define false 0
 
+#define ON_TARGET_TEST true
+
 bool runTests();
 uint8_t blankMemoryChecker(midiEvent_t *head, midiEvent_t *tail);
 void testErrorState();
