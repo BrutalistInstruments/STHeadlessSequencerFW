@@ -19,6 +19,8 @@ bool runTests()
 {
 	memControlTest1();
 	memControlTest2();
+	memControlTest3();
+	memControlTest4();
 	return true;
 }
 
@@ -163,13 +165,53 @@ bool memControlTest2()
 //insert track into pattern
 bool memControlTest3()
 {
-	return false;
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+	addTrack(activeProject->patternArrayHead);
+
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+	track_t* trackToTest = &(activeProject->patternArrayHead->trackArray[1]); //we should already have a track, we're adding a second one.
+
+	if(	trackToTest->channel != 0 ||
+	trackToTest->eventArrayHead != 0 ||
+	trackToTest->forwardLink != 0 ||
+	trackToTest->outPort != 0 ||
+	trackToTest->playHead != 0)
+	{
+		return false;
+
+	}
+
+
+	return true;
 
 }
 
 //insert pattern into project
 bool memControlTest4()
 {
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+
+	void addPattern_p(activeProject);
+
+	if(!blankMemoryChecker(activeMemPoolHead, activeMemPoolTail))
+	{
+			return false;
+	}
+
+//We should probably look at some other stuff here too.
+
 	return false;
 }
 
